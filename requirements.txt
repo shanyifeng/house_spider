@@ -1,0 +1,6 @@
+gevent
+bs4
+lxml
+peewee
+requests
+six
