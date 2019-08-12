@@ -12,8 +12,11 @@ from lib.spider.lianjia.crawl_tools import get_chengjiao_by_community, get_ersho
     get_community_list, get_community_info, get_chengjiao_house_info, get_ershou_house_info
 
 log_format = '%(asctime)s %(name)s[%(module)s] %(levelname)s: %(message)s'
-logging.basicConfig(format=log_format, level=logging.INFO)
-
+logging.basicConfig(format=log_format, level=logging.INFO, handlers=[])
+logging.basicConfig(level=logging.INFO,
+                    format=log_format,
+                    handlers=[logging.FileHandler(path.DATA_PATH + "/log.txt"),
+                              logging.StreamHandler()])
 print(path.ROOT_PATH)
 
 city = 'sh'
@@ -51,16 +54,16 @@ def get_ershou_id_list():
 # for district in districts:
 #     areas.extend(get_areas(city, district))
 
-models.database_init()
+# models.database_init()
 # get_community_list(areas=areas)
 
-communities = get_community_id_list(city)
-print(len(communities))
+# communities = get_community_id_list(city)
+# print(len(communities))
 
 # get_community_info(communities=communities, parser=None, pipeline=None)
 
 # get_chengjiao_by_community(communities=communities)
-get_ershoufang_by_community(communities=communities)
+# get_ershoufang_by_community(communities=communities)
 
 # house_id = get_chengjiao_id_list()
 # print(len(house_id), house_id[:10])

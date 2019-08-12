@@ -1,8 +1,10 @@
 # coding: utf-8
 
-from peewee import MySQLDatabase, SqliteDatabase, PostgresqlDatabase, BigIntegerField, CharField, DateTimeField, CompositeKey, Model
-import os
 import datetime
+import os
+
+from peewee import MySQLDatabase, SqliteDatabase, PostgresqlDatabase, BigIntegerField, CharField, DateTimeField, Model
+
 import settings
 from lib.path import DATA_PATH
 

@@ -34,9 +34,9 @@ def check_block(content: str) -> bool:
 
 
 def get_total_count(content: str) -> int:
-    """
-    :param soup:
-    :return:
+    """ 总数
+    :param content: r.content
+    :return: count
     """
     total_count = 0
     soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer("h2", {"class": "total fl"}))
@@ -48,6 +48,11 @@ def get_total_count(content: str) -> int:
 
 
 def get_total_pages(content: str) -> int:
+    """ 总页数
+
+    :param content: r.content
+    :return: count
+    """
     total_pages = 1
     soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer("div", {"class": "page-box house-lst-page-box"}))
     try:
@@ -58,9 +63,9 @@ def get_total_pages(content: str) -> int:
     return total_pages
 
 
-def parse_community_info_page(req: Request, content: str) -> ([], []):
+def parse_community_info_page(req: Request, content: str) -> []:
     if check_block(content):
-        return None, None
+        return None
 
     soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer("div", {"class": "xiaoquInfoItem"}))
     communityinfos = soup.findAll("div", {"class": "xiaoquInfoItem"})
@@ -84,9 +89,7 @@ def parse_community_info_page(req: Request, content: str) -> ([], []):
         except:
             continue
 
-    print(res)
-
-    return [res], None
+    return res
 
 
 def parse_community_list_page(soup: BeautifulSoup, city: str, community: str):
@@ -128,8 +131,8 @@ def parse_community_list_page(soup: BeautifulSoup, city: str, community: str):
             #     info_dict.update({key: value})
 
             info_dict.update({u'city': city})
-        except Exception as e:
-            logging.error("item loop error %s", e)
+        except:
+            logging.error(f'exception {__name__}')
             continue
         # communityinfo insert into mysql
         data_source.append(info_dict)
@@ -191,8 +194,8 @@ def parse_sold_community_page(soup: BeautifulSoup, city: str, community: str):
                 info_dict.update(
                     {u'dealdate': dealDate.get_text().strip().replace('.', '-')})
 
-            except Exception as e:
-                logging.error(__name__, e)
+            except:
+                logging.error(f'exception {__name__}')
                 continue
             # Sellinfo insert into mysql
             data_source.append(info_dict)
@@ -253,9 +256,8 @@ def parse_rent_community_page(soup, city, community):
                 pricepre = name.find("div", {"class": "price-pre"})
                 info_dict.update(
                     {u'pricepre': pricepre.get_text().strip()})
-
-            except Exception as e:
-                logging.error(__name__, e)
+            except:
+                logging.error(f'exception {__name__}')
                 continue
             # Rentinfo insert into mysql
             data_source.append(info_dict)
@@ -318,8 +320,8 @@ def parse_sell_community_page(soup, city, community):
                 unitPrice = name.find("div", {"class": "unitPrice"})
                 info_dict.update(
                     {u'unitPrice': unitPrice.get("data-price")})
-            except Exception as e:
-                logging.error(__name__, e)
+            except:
+                logging.error(f'exception {__name__}')
                 continue
             data_source.append(info_dict)
 

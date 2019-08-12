@@ -20,15 +20,15 @@ def start_page_request(city: str, key: str, fmt_url: Callable, parser: Callable)
 
     def parser_pg2(req: Request, content: str):
         if check_block(content):
-            return None, None
+            return None
 
-        logging.info(f"{req.url}")
+        logging.debug(f"{req.url}")
         soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
-        return parser(soup, city, key) if parser else None, None
+        return parser(soup, city, key) if parser else None
 
     def parser_pg1(req: Request, content: str):
         if check_block(content):
-            return None, None
+            return None
 
         total_pages = get_total_pages(content)
         logging.info(f"{key} total_page {total_pages}")
@@ -36,7 +36,7 @@ def start_page_request(city: str, key: str, fmt_url: Callable, parser: Callable)
         soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
         results = parser(soup, city, key) if parser else None
         requests = [Request(fmt_url(city, key, page), parser_pg2) for page in range(2, total_pages + 1)]
-        return results, requests
+        return results + requests if results else requests
 
     return Request(fmt_url(city, key, 1), parser_pg1)
 
