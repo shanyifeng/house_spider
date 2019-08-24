@@ -10,10 +10,10 @@ proxys_src = []
 proxys = []
 
 
-def spider_proxyip(num=10):
+def spider_proxyip(num=10, headers=None):
     try:
         url = 'http://www.xicidaili.com/nt/1'
-        req = requests.get(url, headers=create_headers())
+        req = requests.get(url, headers=headers)
         source_code = req.content
         print(source_code)
         soup = BeautifulSoup(source_code, 'lxml')

@@ -2,28 +2,22 @@
 import re
 import json
 import logging
-import lib.spider.common
 from bs4 import BeautifulSoup, SoupStrainer
+
 from lib.request.headers import choice_ua
+from lib.spider.common import get_content_of_url
 from lib.spider.scheduler import Request
 
-site = 'lianjia'
+site = 'fang'
 
 
 def create_headers():
     headers = dict()
     headers["User-Agent"] = choice_ua()
+    headers["Referer"] = 'https://sh.esf.fang.com/'
+    headers["Host"] = 'sh.esf.fang.com'
+    headers[ "Cookie"] = r'global_cookie=azpk4y51xvf06j4ejolneud3n10jxvvvpnp; __utma=147393320.1676517009.1562680937.1565104709.1565879610.6; __utmz=147393320.1565104709.5.3.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; Integrateactivity=notincludemc; newhouse_user_guid=6CBE1526-07B2-0E64-67EF-B4640099A715; unique_cookie=U_tuarhiiz1f6kj2gl2i9g35p271wjyzyxiez*23; __utmc=147393320; newhouse_chat_guid=4DC6415F-9E93-8605-419F-7B7835562A7B; Captcha=4C305234523950726E6E4D7A41354A4F6836747A6675494A3652537A387536632B5A476E6C7268696A344779705146735067496E4C48674136304E744663772B5343714D705A69396D4C343D; g_sourcepage=ehlist; city=sh; __utmb=147393320.69.10.1565879610; logGuid=911cd438-461b-4fec-817d-3e2e6ea1367c; token=59c66a51681142018630f1745e1e739f; __utmt_t0=1; __utmt_t1=1; __utmt_t2=1'
     return headers
-
-
-def get_content_of_url(url) -> str:
-    """ warp lib.spider.common.get_content_of_url
-
-    :param req:
-    :return:
-    """
-    return lib.spider.common.get_content_of_url(url, headers=create_headers())
-
 
 
 def get_content_of_request(req: Request) -> str:
@@ -32,7 +26,7 @@ def get_content_of_request(req: Request) -> str:
     :param req:
     :return:
     """
-    return get_content_of_url(req.url)
+    return get_content_of_url(req.url, headers=create_headers)
 
 
 def check_block(content: str) -> bool:

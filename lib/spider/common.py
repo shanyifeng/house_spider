@@ -46,7 +46,7 @@ def save_page(path: str, content: str):
         f.write(content)
 
 
-def get_page(url, params=None, **kwargs) -> str:
+def get_content_of_url(url: str, params=None, **kwargs) -> str:
     """
     :param url: URL for the new :class:`Request` object.
     :param params: (optional) Dictionary, list of tuples or bytes to send
@@ -75,23 +75,4 @@ def get_page(url, params=None, **kwargs) -> str:
         if SVAE_CACHE:
             save_page(path, content)
 
-    return content
-
-
-def get_content_of_url(url: str, params=None, **kwargs) -> str:
-    """请求页面并转化为 lxml
-
-    Arguments:
-        url {str} -- page url
-
-    Returns:
-        [bs4] -- BeautifulSoup object
-    """
-    try_time = 0
-    while try_time < 5:
-        content = get_page(url, params=params, **kwargs)
-        if content:
-            break
-        try_time += 1
-        time.sleep(1)
     return content

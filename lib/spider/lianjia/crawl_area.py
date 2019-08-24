@@ -3,7 +3,7 @@
 
 import logging
 from bs4 import BeautifulSoup
-from lib.spider.common import get_content_of_url
+from lib.spider.lianjia.common import get_content_of_url
 
 area_map = dict()
 

@@ -76,12 +76,13 @@ class Scheduler(object):
             t1 = time.time()  # 开始计时
             logger.debug(f"worker {n} begin {t1} , {self.tasks.qsize()}")
             try:
-                req = self.tasks.get(timeout=5)
+                req = self.tasks.get(timeout=3)
                 requests = self.spider(req)
                 self.add_tasks(requests)
             except gevent.queue.Empty:
                 gevent.sleep(0)
             except:
+                print(req)
                 import traceback
                 traceback.print_exc()
             gevent.sleep(0)

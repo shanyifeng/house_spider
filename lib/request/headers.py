@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 # coding=utf-8
-# author: zengyuetian
-# 此代码仅供学习与交流，请勿用于商业用途。
-# USER AGENTS 可以自己添加
 
 import random
 
@@ -26,11 +23,8 @@ USER_AGENTS = [
 ]
 
 
-def create_headers(site):
-    headers = dict()
-    headers["User-Agent"] = random.choice(USER_AGENTS)
-    headers["Referer"] = "http://www.{0}.com".format(site)
-    return headers
+def choice_ua():
+    return random.choice(USER_AGENTS)
 
 
 if __name__ == '__main__':

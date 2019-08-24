@@ -2,9 +2,9 @@
 # coding=utf-8
 
 import logging
-from bs4 import BeautifulSoup
-
-from lib.spider.lianjia.common import get_content_of_url
+from bs4 import BeautifulSoup, SoupStrainer
+from lib.spider.common import get_content_of_url
+from lib.spider.fang.common import create_headers
 
 district_map = dict()
 
@@ -29,16 +29,11 @@ def do_get_district_of_city(city):
     :return: 小区拼音列表
     """
 
-    url = f"http://{city}.lianjia.com/xiaoqu"
-    content = get_content_of_url(url)
-    soup = BeautifulSoup(content, 'lxml')
-
-    parent_div = soup.find("div", {"data-role": "ershoufang"})
-    a_list = parent_div.find_all("a")
-
-    district_list = [a.attrs["href"].replace("/xiaoqu/", "")[:-1]
-                     for a in a_list
-                     if a.attrs['href'].startswith("/xiaoqu")]
+    url = f"https://{city}.esf.fang.com/"
+    content = get_content_of_url(url, headers=create_headers)
+    soup = BeautifulSoup(content, 'lxml',  from_encoding="gb18030", parse_only=SoupStrainer("div", {"id": "ri010"}))
+    a_list = soup.select("#ri010 > div:nth-of-type(1) > ul:nth-of-type(1) > li:nth-of-type(1) li a")
+    district_list = [(a.attrs["href"][1:-1], a.text) for a in a_list]
     logging.info(f"{city} 总共 { len(district_list)} 个行政区域")
     return district_list
 

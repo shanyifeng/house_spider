@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 # author:
-from gevent import monkey;
-monkey.patch_all()
+from gevent import monkey;monkey.patch_all()
+
+from lib.utility.export import export_table
 
 import logging
 from lib import models, path
@@ -24,6 +25,14 @@ city = 'sh'
 # districts = ['pudong', 'minhang', 'baoshan', 'xuhui', 'putuo', 'yangpu', 'changning', 'songjiang', 'jiading', 'huangpu', 'jingan', 'zhabei', 'hongkou', 'qingpu', 'fengxian', 'jinshan', 'chongming', 'shanghaizhoubian']
 districts = ['pudong', 'minhang', 'baoshan', 'xuhui', 'putuo', 'yangpu', 'changning', 'songjiang', 'huangpu', 'jingan',
              'zhabei', 'hongkou']
+
+
+# areas = []
+# for district in districts:
+#     areas.extend(get_areas(city, district))
+#
+models.database_init()
+# get_community_list(areas=areas)
 
 
 def get_community_id_list(city):
@@ -50,20 +59,13 @@ def get_ershou_id_list():
     return res
 
 
-# areas = []
-# for district in districts:
-#     areas.extend(get_areas(city, district))
-
-# models.database_init()
-# get_community_list(areas=areas)
-
-# communities = get_community_id_list(city)
+communities = get_community_id_list(city)
 # print(len(communities))
 
 # get_community_info(communities=communities, parser=None, pipeline=None)
 
-# get_chengjiao_by_community(communities=communities)
-# get_ershoufang_by_community(communities=communities)
+get_chengjiao_by_community(communities=communities)
+get_ershoufang_by_community(communities=communities)
 
 # house_id = get_chengjiao_id_list()
 # print(len(house_id), house_id[:10])
@@ -75,3 +77,5 @@ def get_ershou_id_list():
 
 
 # get_community_info()
+
+# export_table('sellhouseinfo')
