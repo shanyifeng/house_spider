@@ -3,7 +3,6 @@
 # author:
 import logging
 from typing import Callable
-from bs4 import BeautifulSoup, SoupStrainer
 from lib.spider.lianjia.common import check_block, get_total_pages, get_content_of_request
 from lib.spider.scheduler import Scheduler, Request
 
@@ -23,8 +22,7 @@ def start_page_request(city: str, key: str, fmt_url: Callable, parser: Callable)
             return None
 
         logging.debug(f"{req.url}")
-        soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
-        return parser(soup, city, key) if parser else None
+        return parser(content, city, key) if parser else None
 
     def parser_pg1(req: Request, content: str):
         if check_block(content):
@@ -33,10 +31,10 @@ def start_page_request(city: str, key: str, fmt_url: Callable, parser: Callable)
         total_pages = get_total_pages(content)
         logging.info(f"{key} total_page {total_pages}")
 
-        soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
-        results = parser(soup, city, key) if parser else None
+        results = parser(content, city, key) if parser else content
         requests = [Request(fmt_url(city, key, page), parser_pg2) for page in range(2, total_pages + 1)]
-        return results + requests if results else requests
+
+        return results + requests if results else None
 
     return Request(fmt_url(city, key, 1), parser_pg1)
 

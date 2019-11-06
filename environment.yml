@@ -1,0 +1,24 @@
+name: lianjia
+channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+dependencies:
+  - python=3.6
+  - autopep8
+  - gevent
+  - jupyter
+  - pip
+  - pylint
+  - sqlite
+  - lxml
+  - numpy
+  - pandas
+  - requests
+  - sqlalchemy
+  - matplotlib
+  - pip:
+    - bs4
+    - peewee
+   
+prefix: D:\Programs\MinicondaData\envs\lianjia
+

@@ -107,7 +107,8 @@ def parse_community_info_page(req: Request, content: str) -> []:
     return res
 
 
-def parse_community_list_page(soup: BeautifulSoup, city: str, community: str):
+def parse_community_list_page(content: str, city: str, community: str):
+    soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
     nameList = soup.findAll("li", {"class": "clear"})
     data_source = []
     for name in nameList:  # Per item loop
@@ -154,7 +155,14 @@ def parse_community_list_page(soup: BeautifulSoup, city: str, community: str):
     return data_source
 
 
-def parse_sold_community_page(soup: BeautifulSoup, city: str, community: str):
+def parse_sold_community_page(content: str, city: str, community: str):
+    soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'position'}))
+    selected = soup.find("a", {"class":"selected"})
+    if selected and selected.get('href') == '/chengjiao/':
+        print(selected)
+        return None
+
+    soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
     data_source = []
     ultag = soup.find("ul", {"class": "listContent"})
     if ultag:
@@ -221,7 +229,8 @@ def parse_sold_community_page(soup: BeautifulSoup, city: str, community: str):
     return data_source
 
 
-def parse_rent_community_page(soup, city, community):
+def parse_rent_community_page(content: str, city: str, community: str):
+    soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
     data_source = []
     for ultag in soup.findAll("ul", {"class": "house-lst"}):
         for name in ultag.find_all('li'):
@@ -282,9 +291,15 @@ def parse_rent_community_page(soup, city, community):
     return data_source
 
 
-def parse_sell_community_page(soup, city, community):
+def parse_sell_community_page(content: str, city: str, community: str):
+    soup = BeautifulSoup(content, 'lxml', parse_only=SoupStrainer('div', attrs={'class': 'leftContent'}))
+    no_result = soup.find("div", {"class":"m-noresult"})
+    logging.info(no_result)
+    if no_result:
+        return None
+
     data_source = []
-    ultag = soup.find("ul", {"class": "sellListContent"})
+    ultag = soup.find("ul", {"class": "sellListContent"}, recursive=False)
     if ultag:
         for name in ultag.find_all('li'):
             info_dict = {}

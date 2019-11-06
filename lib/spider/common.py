@@ -72,7 +72,7 @@ def get_content_of_url(url: str, params=None, **kwargs) -> str:
             content = r.content
             logging.debug("requests ok: %d url %s", r.status_code, url)
 
-        if SVAE_CACHE:
+        if SVAE_CACHE and r.ok:
             save_page(path, content)
 
     return content
