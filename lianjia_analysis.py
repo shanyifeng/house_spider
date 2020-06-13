@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # coding=utf-8
-# author: 
+# author:
 
 # %%
 import math
 import os
 import sqlite3
-from datetime import datetime
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 import settings
 from lib.path import DATA_PATH
-
-
 
 # %%
 db_path = os.path.join(DATA_PATH, settings.DBNAME)
@@ -99,18 +96,22 @@ years = sorted(set(df['dealdate'].dt.year))
 # 区县
 districts = set(community_df['district'])
 
-
 # %% 已售总房价销量分布
 
-plot_range_count(df)
+plt.figure(1)
 plt.title("已售总房价销量分布")
-plt.show()
+plot_range_count(df)
+# plt.show()
 
+# %%
+
+plt.figure(2)
+plt.title(f"已售总房价销量分布(2016-2019)")
 for year in years:
     plot_range_count(df[df['dealdate'].dt.year == year], label=year)
-plt.title(f"已售总房价销量分布(2016-2019)")
 plt.legend(loc=0)
-plt.show()
+
+# plt.show()
 
 # %% 已售均价
 
@@ -123,63 +124,85 @@ price = price_yymm(df)
 # plt.legend(loc=0)
 # plt.show()
 
-plt.plot(price['dealdate'], price['price'])
+plt.figure(3)
 plt.title(f"已售均价")
-plt.show()
+plt.plot(price['dealdate'], price['price'])
+
+
+# plt.show()
 
 
 # %% 房屋销售量
 
 def count_yymm(data):
-    data_group = data.groupby([data['dealdate'].map(lambda t: pd.datetime(t.year, t.month, 1))])
+    # data_group = data.groupby([data['dealdate'].map(lambda t: pd.datetime(t.year, t.month, 1))])
+    data_group = data.groupby([data.dealdate.dt.year, data.dealdate.dt.month])
     data_group = data_group["houseID"].count().reset_index(name="count")
     return data_group
 
 
-# count_yymm1 = count_yymm(df)
-# for year in years:
-#     line = count_yymm1[count_yymm1['dealdate'].dt.year == year]
-#     plt.plot(line['dealdate'], line['count'].values, label=year)
-# plt.legend(loc=0)
-# plt.title(f"房屋销售量分布(2016-2019)")
-# plt.show()
-
 count_yymm1 = count_yymm(df)
-plt.plot(count_yymm1['dealdate'], count_yymm1['count'].values)
-plt.title(f"房屋销售量分布")
+for year in years:
+    line = count_yymm1[count_yymm1['dealdate'].dt.year == year]
+    plt.plot(line['dealdate'], line['count'].values, label=year)
+plt.legend(loc=0)
+plt.title(f"房屋销售量分布(2016-2019)")
 plt.show()
+
+# count_yymm1 = count_yymm(df)
+# plt.figure(4)
+# plt.title(f"房屋销售量分布")
+# plt.plot(count_yymm1['dealdate'], count_yymm1['count'].values)
+# plt.show()
 
 # %% 区县
 
 # 区县总价
+plt.figure(5)
+plt.title("区县已售总房价销量分布")
+
 for district in districts:
     df_d = df[df.district == district]
     plot_range_count(df_d, label=district)
-plt.title("区县已售总房价销量分布")
+
 plt.legend(loc=0)
-plt.show()
+
+# plt.show()
 
 # 区县已售均价
+plt.figure(6)
+plt.title(f"区县已售均价(2016-2019)")
+
 for district in districts:
     df_d = df[df.district == district]
     price = price_yymm(df_d)
     plt.plot(price['dealdate'], price['price'], label=district)
-plt.title(f"区县已售均价(2016-2019)")
+
 plt.legend(loc=0)
-plt.show()
+
+# plt.show()
+
+plt.figure(7)
+plt.title(f"区县房屋销售量分布")
 
 for district in districts:
     df_d = df[df.district == district]
     line = count_yymm(df_d)
-    plt.plot(line['dealdate'], line['count'].values, label=district)
-plt.legend(loc=0)
-plt.title(f"区县房屋销售量分布")
-plt.show()
+    plt.bar(line['dealdate'], line['count'].values, label=district)
+    # df.groupby([df_d.dealdate.dt.year, df_d.dealdate.dt.month]).houseID.value_counts().unstack(0)
+    # tmp = df_d['dealdate'].groupby([df_d.dealdate.dt.year, df_d.dealdate.dt.month]).agg('count')
+    # tmp2 = [f'{x}-{y}' for x, y in tmp.index]
+    # plt.bar(tmp2, tmp.values, label=district)
+    # plt.xticks(rotation=60)
 
+# df.groupby([df_d.dealdate.dt.year, df_d.dealdate.dt.month]).houseID.value_counts().unstack(0).plot.bar()
+
+plt.legend(loc=0)
+
+plt.show()
 
 # %% 小区销量
 
-tmp = df[(df.district=='松江') & (df.dealdate > '2019-8-1')]
+tmp = df[(df.district == '松江') & (df.dealdate > '2019-8-1')]
 
 tmp.groupby('community').size().reset_index(name='size').sort_values('size')
-

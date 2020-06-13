@@ -33,11 +33,11 @@ districts = ['pudong', 'minhang', 'baoshan', 'xuhui', 'putuo', 'yangpu', 'changn
              'zhabei', 'hongkou']
 
 
-# areas = []
-# for district in districts:
-#     areas.extend(get_areas(city, district))
+areas = []
+for district in districts:
+    areas.extend(get_areas(city, district))
 
-# get_community_list(areas=areas)
+get_community_list(areas=areas)
 
 #%% 爬取已售和在售
 
