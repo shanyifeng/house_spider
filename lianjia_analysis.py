@@ -27,31 +27,6 @@ def table_dataframe(table):
     return pd.read_sql_query(f"select * from {table};", conn)
 
 
-def pie_range_count(data, label=None):
-    """
-
-    :param data:
-    :param label:
-    :return:
-    """
-    count = data.groupby(["range"])["houseID"].count().reset_index(name="count")
-    plt.pie(count['count'].values, autopct='%.2f', label=label)
-
-
-def plot_range_count(data, label=None, bottom=None):
-    count = data.groupby(["range"])["houseID"].count().reset_index(name="count")
-    plt.bar(count['range'], count['count'].values, label=label, bottom=bottom)
-    return count['count'].values
-
-
-def price_yymm(data):
-    data_group = data.groupby([data['dealdate'].map(lambda t: pd.datetime(t.year, t.month, 1))])
-    data_group = data.groupby(['deal']).agg({'totalPrice': np.sum, 'square': np.sum})
-    data_group['price'] = data_group['totalPrice'] / data_group['square']
-    data_group = data_group.reset_index()
-    return data_group
-
-
 def square_to_numeric(x):
     try:
         return float(x[:-2])
@@ -74,7 +49,8 @@ def square_to_numeric(x):
 df = table_dataframe('soldhouseinfo')
 
 # 总价、单价
-df[['totalPrice', 'unitPrice', 'community']] = df[['totalPrice', 'unitPrice', 'community']].apply(pd.to_numeric)
+df[['totalPrice', 'unitPrice', 'community']] = df[[
+    'totalPrice', 'unitPrice', 'community']].apply(pd.to_numeric)
 df = df[(df.totalPrice > 0) & (df.totalPrice < 1000)]
 
 df['dealdate'] = df['dealdate'].apply(pd.to_datetime)
@@ -100,77 +76,40 @@ districts = set(community_df['district'])
 
 # %% 已售总房价销量分布
 
-plt.figure(1)
 plt.title("已售总房价销量分布(2016-2019)")
-df.groupby(['range',df['dealdate'].dt.year]).size().unstack().plot(kind='bar',stacked=True)
+df.groupby(['range', df['dealdate'].dt.year]).size().unstack().plot(kind='bar', stacked=True)
 
 # df.groupby(['range']).size().plot()
 # df.groupby(['range',df['dealdate'].dt.year]).size().unstack().plot()
 
 # %% 已售均价
 
-price = price_yymm(df)
-
-# for year in years:
-#     data_y = price[price['dealdate'].dt.year == year]
-#     plt.plot(data_y['dealdate'], data_y['price'], label=year)
-# plt.title(f"已售均价(2016-2019)")
-# plt.legend(loc=0)
-# plt.show()
-
-plt.figure(3)
 plt.title(f"已售均价")
-plt.bar(price['dealdate'], price['price'])
-
-
-# plt.show()
+group1 = df.groupby(['dealYearMonth'])
+values = group1['totalPrice'].sum() / group1['square'].sum()
+values.plot()
 
 
 # %% 房屋销售量
 
-plt.figure(4)
 plt.title(f"区县房屋销售量分布")
-
-df.groupby(['dealYearMonth','district']).size().unstack().plot()
-
-# for district in districts:
-#     df_d = df[df.district == district]
-#     tmp = df_d.groupby([df_d.dealdate.dt.year, df_d.dealdate.dt.month]).agg('count')
-#     tmp2 = [f'{x}-{y}' for x, y in tmp.index]
-#     plt.bar(tmp2, tmp.values, label=district)
-#     plt.xticks(rotation=60)
-
+df.groupby(['dealYearMonth', 'district']).size().unstack().plot()
 plt.legend(loc=0)
 
 # %% 区县
 
 # 区县总价
-plt.figure(5)
 plt.title("区县已售总房价销量分布")
-df.groupby(['range','district']).size().unstack().plot()
-# for district in districts:
-#     df_d = df[df.district == district]
-#     plot_range_count(df_d, label=district)
-
-# plt.legend(loc=0)
-
-# plt.show()
-
-# 区县已售均价
-plt.figure(6)
-plt.title(f"区县已售均价(2016-2019)")
-group1 = df.groupby(['dealYearMonth'])
-values = group1['totalPrice'].sum()/group1['square'].sum()
-values.plot()
-
-# for district in districts:
-#     df_d = df[df.district == district]
-#     price = price_yymm(df_d)
-#     plt.plot(price['dealdate'], price['price'], label=district)
-
+df.groupby(['range', 'district']).size().unstack().plot()
 plt.legend(loc=0)
 
-# plt.show()
+# 区县已售均价
+plt.title(f"区县已售均价(2016-2019)")
+group1 = df.groupby(['dealYearMonth','district'])
+values = group1['totalPrice'].sum() / group1['square'].sum()
+values.unstack().plot()
+
+plt.legend(loc=0)
 
 plt.show()
 
